@@ -47,6 +47,11 @@ pub const KIMI_CODING_BASE_URL: &str = "https://api.kimi.com/coding";
 pub const QIANFAN_BASE_URL: &str = "https://qianfan.baidubce.com/v2";
 pub const VOLCENGINE_BASE_URL: &str = "https://ark.cn-beijing.volces.com/api/v3";
 pub const VOLCENGINE_CODING_BASE_URL: &str = "https://ark.cn-beijing.volces.com/api/coding/v3";
+/// BytePlus — Volcengine international (Southeast Asia endpoint).
+pub const BYTEPLUS_BASE_URL: &str = "https://ark.ap-southeast.bytepluses.com/api/v3";
+pub const BYTEPLUS_CODING_BASE_URL: &str = "https://ark.ap-southeast.bytepluses.com/api/coding/v3";
+/// Z.AI Anthropic-compatible route (uses Anthropic messages API format).
+pub const ZAI_ANTHROPIC_BASE_URL: &str = "https://api.z.ai/api/anthropic";
 
 // ── Chutes.ai ────────────────────────────────────────────────────
 pub const CHUTES_BASE_URL: &str = "https://llm.chutes.ai/v1";

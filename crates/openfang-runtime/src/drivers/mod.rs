@@ -21,7 +21,8 @@ use openfang_types::model_catalog::{
     OPENROUTER_BASE_URL, PERPLEXITY_BASE_URL, QIANFAN_BASE_URL, QWEN_BASE_URL,
     REPLICATE_BASE_URL, SAMBANOVA_BASE_URL, TOGETHER_BASE_URL, VENICE_BASE_URL, VLLM_BASE_URL,
     VOLCENGINE_BASE_URL, VOLCENGINE_CODING_BASE_URL, XAI_BASE_URL, ZAI_BASE_URL,
-    ZAI_CODING_BASE_URL, ZHIPU_BASE_URL, ZHIPU_CODING_BASE_URL,
+    ZAI_ANTHROPIC_BASE_URL, ZAI_CODING_BASE_URL, ZHIPU_BASE_URL, ZHIPU_CODING_BASE_URL,
+    BYTEPLUS_BASE_URL, BYTEPLUS_CODING_BASE_URL,
 };
 use std::sync::Arc;
 
@@ -206,6 +207,16 @@ fn provider_defaults(provider: &str) -> Option<ProviderDefaults> {
             api_key_env: "VOLCENGINE_API_KEY",
             key_required: true,
         }),
+        "byteplus" => Some(ProviderDefaults {
+            base_url: BYTEPLUS_CODING_BASE_URL,
+            api_key_env: "BYTEPLUS_API_KEY",
+            key_required: true,
+        }),
+        "byteplus-free" | "byteplus_free" => Some(ProviderDefaults {
+            base_url: BYTEPLUS_BASE_URL,
+            api_key_env: "BYTEPLUS_API_KEY",
+            key_required: true,
+        }),
         "chutes" => Some(ProviderDefaults {
             base_url: CHUTES_BASE_URL,
             api_key_env: "CHUTES_API_KEY",
@@ -340,6 +351,23 @@ pub fn create_driver(config: &DriverConfig) -> Result<Arc<dyn LlmDriver>, LlmErr
             github_token,
             base_url,
         )));
+    }
+
+    // Z.AI Claude — Anthropic-compatible endpoint via z.ai proxy
+    if provider == "zai-claude" || provider == "zai_claude" {
+        let api_key = config
+            .api_key
+            .clone()
+            .or_else(|| std::env::var("ZAI_API_KEY").ok())
+            .or_else(|| std::env::var("ZHIPU_API_KEY").ok())
+            .ok_or_else(|| {
+                LlmError::MissingApiKey("Set ZAI_API_KEY environment variable".to_string())
+            })?;
+        let base_url = config
+            .base_url
+            .clone()
+            .unwrap_or_else(|| ZAI_ANTHROPIC_BASE_URL.to_string());
+        return Ok(Arc::new(anthropic::AnthropicDriver::new(api_key, base_url)));
     }
 
     // Kimi for Code — Anthropic-compatible endpoint
@@ -497,6 +525,9 @@ pub fn known_providers() -> &'static [&'static str] {
         "codex",
         "claude-code",
         "qwen-code",
+        "byteplus",
+        "byteplus-free",
+        "zai-claude",
     ]
 }
 
@@ -599,7 +630,10 @@ mod tests {
         assert!(providers.contains(&"codex"));
         assert!(providers.contains(&"claude-code"));
         assert!(providers.contains(&"qwen-code"));
-        assert_eq!(providers.len(), 35);
+        assert!(providers.contains(&"byteplus"));
+        assert!(providers.contains(&"byteplus-free"));
+        assert!(providers.contains(&"zai-claude"));
+        assert_eq!(providers.len(), 38);
     }
 
     #[test]
@@ -694,6 +728,41 @@ mod tests {
         assert_eq!(d.base_url, "https://api.kimi.com/coding");
         assert_eq!(d.api_key_env, "KIMI_API_KEY");
         assert!(d.key_required);
+    }
+
+    #[test]
+    fn test_provider_defaults_byteplus() {
+        let d = provider_defaults("byteplus").unwrap();
+        assert_eq!(d.base_url, "https://ark.ap-southeast.bytepluses.com/api/coding/v3");
+        assert_eq!(d.api_key_env, "BYTEPLUS_API_KEY");
+        assert!(d.key_required);
+    }
+
+    #[test]
+    fn test_provider_defaults_byteplus_free() {
+        let d = provider_defaults("byteplus-free").unwrap();
+        assert_eq!(d.base_url, "https://ark.ap-southeast.bytepluses.com/api/v3");
+        assert_eq!(d.api_key_env, "BYTEPLUS_API_KEY");
+        assert!(d.key_required);
+
+        // Also test underscore variant
+        let d2 = provider_defaults("byteplus_free").unwrap();
+        assert_eq!(d2.base_url, d.base_url);
+    }
+
+    #[test]
+    fn test_zai_claude_creates_anthropic_driver() {
+        // zai-claude should use ZAI_API_KEY and create an Anthropic driver
+        std::env::set_var("ZAI_API_KEY", "test-zai-key-12345");
+        let config = DriverConfig {
+            provider: "zai-claude".to_string(),
+            api_key: None,
+            base_url: None,
+            skip_permissions: true,
+        };
+        let driver = create_driver(&config);
+        assert!(driver.is_ok(), "zai-claude should create a driver successfully");
+        std::env::remove_var("ZAI_API_KEY");
     }
 
     #[test]
