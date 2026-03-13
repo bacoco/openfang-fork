@@ -6,6 +6,7 @@
 
 pub mod anthropic;
 pub mod claude_code;
+pub mod cloudcode;
 pub mod copilot;
 pub mod fallback;
 pub mod gemini;
@@ -353,6 +354,24 @@ pub fn create_driver(config: &DriverConfig) -> Result<Arc<dyn LlmDriver>, LlmErr
         )));
     }
 
+    // Google Cloud Code Assist — free Gemini via OAuth (cloudcode-pa.googleapis.com)
+    if provider == "cloudcode" || provider == "google-gemini-cli" || provider == "gemini-cli" {
+        let credentials = config
+            .api_key
+            .clone()
+            .or_else(|| std::env::var("GEMINI_CLOUDCODE_CREDENTIALS").ok())
+            .ok_or_else(|| {
+                LlmError::MissingApiKey(
+                    "Set GEMINI_CLOUDCODE_CREDENTIALS as JSON: {\"token\":\"ya29...\",\"refresh\":\"1//...\",\"projectId\":\"...\"}".to_string()
+                )
+            })?;
+        let base_url = config
+            .base_url
+            .clone()
+            .unwrap_or_else(|| "https://cloudcode-pa.googleapis.com".to_string());
+        return Ok(Arc::new(cloudcode::CloudCodeDriver::new(credentials, base_url)));
+    }
+
     // Z.AI Claude — Anthropic-compatible endpoint via z.ai proxy
     if provider == "zai-claude" || provider == "zai_claude" {
         let api_key = config
@@ -528,6 +547,8 @@ pub fn known_providers() -> &'static [&'static str] {
         "byteplus",
         "byteplus-free",
         "zai-claude",
+        "cloudcode",
+        "google-gemini-cli",
     ]
 }
 
@@ -633,7 +654,9 @@ mod tests {
         assert!(providers.contains(&"byteplus"));
         assert!(providers.contains(&"byteplus-free"));
         assert!(providers.contains(&"zai-claude"));
-        assert_eq!(providers.len(), 38);
+        assert!(providers.contains(&"cloudcode"));
+        assert!(providers.contains(&"google-gemini-cli"));
+        assert_eq!(providers.len(), 40);
     }
 
     #[test]
