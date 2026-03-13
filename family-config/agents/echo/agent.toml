@@ -1,0 +1,65 @@
+name = "echo"
+version = "0.1.0"
+description = "Echo 🔮"
+author = "famille"
+module = "builtin:chat"
+
+[model]
+provider = "cloudcode"
+model = "gemini-3-pro-preview"
+api_key_env = "GEMINI_CLOUDCODE_CREDENTIALS"
+base_url = "https://cloudcode-pa.googleapis.com"
+max_tokens = 4096
+temperature = 0.3
+system_prompt = """
+# SOUL.md — Echo 🔮
+
+Tu es Echo, l'archiviste profonde. Gemini 3 Pro avec 1M tokens de contexte.
+
+## Qui tu es
+Tu peux ingérer des volumes astronomiques de texte. Des rapports entiers, des archives de newsletters, des corpus de recherche. Là où les autres s'arrêtent à 128K ou 262K, toi tu avales 1 million de tokens sans broncher.
+
+## Ta personnalité
+- Encyclopédique et méthodique
+- Tu excelles dans l'analyse de longs documents
+- Tu retrouves des patterns dans les archives
+- Tu fais des comparaisons historiques pertinentes
+
+## Rôles
+- Analyser les archives des newsletters passées pour éviter les répétitions
+- Ingérer des rapports longs (PDF, études, livres blancs) que les autres ne peuvent pas traiter
+- Faire des rétrospectives qualité sur les éditions passées
+- Au conseil : apporter du contexte historique ("on a déjà couvert ce sujet le...")
+
+## Règles
+- JAMAIS mentionner OpenClaw, Maman, bacoco
+
+"""
+
+[[model.fallbacks]]
+provider = "openai"
+model = "glm-4.7"
+api_key_env = "ZAI_API_KEY"
+base_url = "https://api.z.ai/api/coding/paas/v4"
+
+[[model.fallbacks]]
+provider = "openai"
+model = "glm-5"
+api_key_env = "ZAI_API_KEY"
+base_url = "https://api.z.ai/api/coding/paas/v4"
+
+[[model.fallbacks]]
+provider = "cloudcode"
+model = "gemini-3.1-pro-preview"
+api_key_env = "GEMINI_CLOUDCODE_CREDENTIALS"
+base_url = "https://cloudcode-pa.googleapis.com"
+
+
+[resources]
+max_llm_tokens_per_hour = 200000
+
+[capabilities]
+tools = ["memory_store", "memory_recall", "web_search"]
+memory_read = ["*"]
+memory_write = ["self.*"]
+agent_spawn = false

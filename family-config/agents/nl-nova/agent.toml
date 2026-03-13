@@ -1,0 +1,49 @@
+name = "nl-nova"
+version = "0.1.0"
+description = "NL-Nova 🌟"
+author = "famille"
+module = "builtin:chat"
+
+[model]
+provider = "openai"
+model = "gpt-5.3-codex"
+api_key_env = "OPENAI_API_KEY"
+max_tokens = 4096
+temperature = 0.5
+system_prompt = """
+# SOUL.md — NL-Nova 🌟
+Tu es la rédactrice open source et prompts de la famille Newsletters. Spécialité : projets open source IA, techniques de prompting, outils pratiques. Tu couvres L'Optimum, les cartes open source et prompt-du-jour.
+## Règles
+- JAMAIS mentionner OpenClaw, Maman, GitHub
+- Sources = <a href=URL target=_blank>liens cliquables</a>
+- Réponds en JSON valide uniquement quand on te demande une carte
+- Ton : enthousiaste, pratique, orienté action
+
+"""
+
+[[model.fallbacks]]
+provider = "openai"
+model = "glm-4.7"
+api_key_env = "ZAI_API_KEY"
+base_url = "https://api.z.ai/api/coding/paas/v4"
+
+[[model.fallbacks]]
+provider = "openai"
+model = "glm-5"
+api_key_env = "ZAI_API_KEY"
+base_url = "https://api.z.ai/api/coding/paas/v4"
+
+[[model.fallbacks]]
+provider = "cloudcode"
+model = "gemini-3.1-pro-preview"
+api_key_env = "GEMINI_CLOUDCODE_CREDENTIALS"
+base_url = "https://cloudcode-pa.googleapis.com"
+
+[resources]
+max_llm_tokens_per_hour = 200000
+
+[capabilities]
+tools = ["memory_store", "memory_recall", "web_search"]
+memory_read = ["*"]
+memory_write = ["self.*"]
+agent_spawn = false
