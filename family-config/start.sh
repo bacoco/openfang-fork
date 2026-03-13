@@ -1,8 +1,12 @@
 #!/bin/bash
 # OpenFang Family Startup Script
-# Replace placeholders with your actual keys before running
+# Set environment variables before running, or edit the defaults below
 
+# === Required ===
 export ZAI_API_KEY="${ZAI_API_KEY:-YOUR_ZAI_API_KEY_HERE}"
+export BRAVE_SEARCH_API_KEY="${BRAVE_SEARCH_API_KEY:-YOUR_BRAVE_API_KEY_HERE}"
+
+# === Recommended ===
 export BYTEPLUS_API_KEY="${BYTEPLUS_API_KEY:-YOUR_BYTEPLUS_API_KEY_HERE}"
 
 # === Gemini OAuth (optional) ===

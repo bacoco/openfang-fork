@@ -33,33 +33,81 @@ Cela crée `~/.openfang/` avec la config de base.
 Créer un fichier `~/.openfang/.env` ou les ajouter à `~/.bashrc` :
 
 ```bash
-# === OBLIGATOIRE : z.ai (Coding Max plan — gratuit) ===
+# ══════════════════════════════════════════════════════════
+# OBLIGATOIRES — sans ces clés, la famille ne fonctionne pas
+# ══════════════════════════════════════════════════════════
+
+# z.ai (Coding Max plan — gratuit)
+# Principal pour 28+ agents (GLM-5, GLM-4.7, GLM-4.6)
 # Obtenir sur https://z.ai → Settings → API Keys
 export ZAI_API_KEY="votre_clé_zai"
 
-# === OPTIONNEL : BytePlus (Coding Plan — $10/mois, ou free packs) ===
+# Brave Search API (recherche web pour tous les agents)
+# Gratuit jusqu'à 2000 requêtes/mois
+# Obtenir sur https://brave.com/search/api/ → Get API Key
+export BRAVE_SEARCH_API_KEY="votre_clé_brave"
+
+# ══════════════════════════════════════════════════════════
+# RECOMMANDÉS — diversité de modèles et fallbacks
+# ══════════════════════════════════════════════════════════
+
+# BytePlus (Coding Plan $10/mois ou free resource packs)
+# Modèles : GLM-4.7, Kimi-K2-Thinking, GPT-OSS-120B, DeepSeek-V3/R1, Seed
 # Obtenir sur https://console.byteplus.com → MaaS → API Keys
 export BYTEPLUS_API_KEY="votre_clé_byteplus"
 
-# === OPTIONNEL : Google Gemini (gratuit via OAuth) ===
-# Nécessite un refresh token obtenu via Gemini CLI ou OpenClaw
-# Format JSON avec token, refresh token et project ID
-export GEMINI_CLOUDCODE_CREDENTIALS='{"token":"ya29...","refresh":"1//...","projectId":"active-scanner-..."}'
-export GEMINI_OAUTH_CLIENT_ID="681255809395-oo8ft2oprdrnp9e3aqf6av3hmdib135j.apps.googleusercontent.com"
-export GEMINI_OAUTH_CLIENT_SECRET="voir ci-dessous"
+# ══════════════════════════════════════════════════════════
+# OPTIONNELS — accès gratuit via OAuth (tokens à rafraîchir)
+# ══════════════════════════════════════════════════════════
 
-# === OPTIONNEL : OpenAI Codex (gratuit via OAuth) ===
-# Nécessite un JWT token obtenu via Codex CLI ou OpenClaw
+# Google Gemini (gratuit via OAuth Cloud Code Assist)
+# Utilisé par : Sage 🦎 (gemini-3.1-pro), Blaise 🧮 et Echo 🔮 (gemini-3-pro)
+# Nécessite un refresh token obtenu via Gemini CLI
+export GEMINI_REFRESH_TOKEN="1//03sQAK..."
+export GEMINI_PROJECT_ID="active-scanner-..."
+export GEMINI_OAUTH_CLIENT_ID="voir section OAuth ci-dessous"
+export GEMINI_OAUTH_CLIENT_SECRET="voir section OAuth ci-dessous"
+
+# OpenAI Codex (gratuit via OAuth)
+# Utilisé par : Nova 🌟 (gpt-5.3-codex)
+# Nécessite un JWT obtenu via Codex CLI
 export OPENAI_API_KEY="eyJ..."
 ```
 
+### Fonctionnement sans les clés optionnelles
+
+| Clé manquante | Impact | Fallback automatique |
+|---------------|--------|---------------------|
+| `BYTEPLUS_API_KEY` | Pas de BytePlus models | z.ai prend le relais |
+| `GEMINI_*` | Sage, Blaise, Echo sans Gemini | z.ai/glm-4.7 ou glm-5 |
+| `OPENAI_API_KEY` | Nova sans Codex | z.ai/glm-4.7 |
+
+**Minimum vital** : `ZAI_API_KEY` + `BRAVE_SEARCH_API_KEY` = tous les agents fonctionnent via fallbacks + recherche web opérationnelle.
+
 ### Comment obtenir les tokens OAuth
 
-**Gemini** : Installer Gemini CLI (`npm i -g @anthropic-ai/gemini-cli`), lancer `gemini auth login`, puis extraire le refresh token de `~/.gemini/auth.json`.
+**Gemini** :
+```bash
+npm i -g @anthropic-ai/gemini-cli  # ou depuis OpenClaw
+gemini auth login                   # ouvre le navigateur
+# Extraire depuis ~/.gemini/auth.json :
+#   refresh_token → GEMINI_REFRESH_TOKEN
+#   project_id    → GEMINI_PROJECT_ID
+```
 
-**OpenAI Codex** : Installer Codex CLI (`npm i -g @openai/codex`), lancer `codex auth login`, puis extraire le JWT de `~/.codex/auth.json`.
+**OpenAI Codex** :
+```bash
+npm i -g @openai/codex
+codex auth login                    # ouvre le navigateur
+# Extraire le JWT depuis ~/.codex/auth.json → OPENAI_API_KEY
+# ⚠️ Le JWT expire — à rafraîchir périodiquement
+```
 
-**Sans ces tokens** : Les agents Sage 🦎, Blaise 🧮, Echo 🔮 (Gemini) et Nova 🌟 (Codex) utiliseront automatiquement leurs **fallbacks z.ai** — la famille fonctionne à 100% avec uniquement `ZAI_API_KEY`.
+**Brave Search** :
+```
+https://brave.com/search/api/ → Create Account → Get API Key
+Plan gratuit : 2000 requêtes/mois (suffisant pour la famille)
+```
 
 ## 4. Installer les agents
 
