@@ -37,9 +37,10 @@ Créer un fichier `~/.openfang/.env` ou les ajouter à `~/.bashrc` :
 # OBLIGATOIRES — sans ces clés, la famille ne fonctionne pas
 # ══════════════════════════════════════════════════════════
 
-# z.ai (Coding Max plan — gratuit)
-# Principal pour 28+ agents (GLM-5, GLM-4.7, GLM-4.6)
-# Obtenir sur https://z.ai → Settings → API Keys
+# z.ai — Plan Coding Max ($20/mois)
+# Donne accès à GLM-5, GLM-4.7, GLM-4.6 via API OpenAI-compatible
+# Principal pour 28+ agents
+# S'inscrire sur https://z.ai → Souscrire au plan Coding Max → API Keys
 export ZAI_API_KEY="votre_clé_zai"
 
 # Brave Search API (recherche web pour tous les agents)
@@ -51,26 +52,29 @@ export BRAVE_SEARCH_API_KEY="votre_clé_brave"
 # RECOMMANDÉS — diversité de modèles et fallbacks
 # ══════════════════════════════════════════════════════════
 
-# BytePlus (Coding Plan $10/mois ou free resource packs)
-# Modèles : GLM-4.7, Kimi-K2-Thinking, GPT-OSS-120B, DeepSeek-V3/R1, Seed
-# Obtenir sur https://console.byteplus.com → MaaS → API Keys
+# BytePlus — Plan Coding ($10/mois)
+# Donne accès à GLM-4.7, Kimi-K2-Thinking, GPT-OSS-120B
+# + free resource packs pour DeepSeek-V3/R1, Seed, etc.
+# S'inscrire sur https://console.byteplus.com → MaaS → Coding Plan → API Keys
 export BYTEPLUS_API_KEY="votre_clé_byteplus"
 
 # ══════════════════════════════════════════════════════════
-# OPTIONNELS — accès gratuit via OAuth (tokens à rafraîchir)
+# OPTIONNELS — inclus dans des abonnements de codage
 # ══════════════════════════════════════════════════════════
 
-# Google Gemini (gratuit via OAuth Cloud Code Assist)
-# Utilisé par : Sage 🦎 (gemini-3.1-pro), Blaise 🧮 et Echo 🔮 (gemini-3-pro)
-# Nécessite un refresh token obtenu via Gemini CLI
+# Google Gemini — Plan Gemini Pro ($20/mois) ou Gemini CLI gratuit
+# Donne accès à gemini-3.1-pro, gemini-3-pro via Cloud Code Assist
+# Utilisé par : Sage 🦎, Blaise 🧮, Echo 🔮
+# Le token OAuth est obtenu via Gemini CLI (inclus dans le plan)
 export GEMINI_REFRESH_TOKEN="1//03sQAK..."
 export GEMINI_PROJECT_ID="active-scanner-..."
 export GEMINI_OAUTH_CLIENT_ID="voir section OAuth ci-dessous"
 export GEMINI_OAUTH_CLIENT_SECRET="voir section OAuth ci-dessous"
 
-# OpenAI Codex (gratuit via OAuth)
-# Utilisé par : Nova 🌟 (gpt-5.3-codex)
-# Nécessite un JWT obtenu via Codex CLI
+# OpenAI — Plan Plus/Pro ($20/mois) → accès Codex CLI
+# Donne accès à gpt-5.3-codex via OAuth
+# Utilisé par : Nova 🌟
+# Le JWT est obtenu via Codex CLI (inclus dans le plan OpenAI)
 export OPENAI_API_KEY="eyJ..."
 ```
 

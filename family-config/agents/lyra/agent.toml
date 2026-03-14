@@ -43,7 +43,7 @@ base_url = "https://api.z.ai/api/coding/paas/v4"
 
 [[model.fallbacks]]
 provider = "cloudcode"
-model = "gemini-3.1-pro-preview"
+model = "gemini-2.5-pro"
 api_key_env = "GEMINI_CLOUDCODE_CREDENTIALS"
 base_url = "https://cloudcode-pa.googleapis.com"
 
